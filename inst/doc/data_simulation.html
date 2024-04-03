@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>7. Data Simulation</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">7. Data Simulation</h1>
+
+
+
+<p>This vignette will show the internal functions for generating data
+that can be used in simulation studies.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(psborrow2)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<div id="generating-baseline-data" class="section level2">
+<h2>Generating Baseline Data</h2>
+<p>First we define how to generate baseline data for our study. In its
+simplest form we only need to define how many patients are in the arms:
+treated internal, control internal, control external.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>simple_baseline <span class="ot">&lt;-</span> <span class="fu">create_baseline_object</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">n_trt_int =</span> <span class="dv">100</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">n_ctrl_int =</span> <span class="dv">50</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">n_ctrl_ext =</span> <span class="dv">100</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>)</span></code></pre></div>
+<p>This object defines how the data will be created. To actually
+generate a sample, use <code>generate()</code> to produce a list
+containing <code>data.frame</code>s for each arm. We can convert this to
+a single <code>data.frame</code> if needed.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>baseline_data <span class="ot">&lt;-</span> <span class="fu">generate</span>(simple_baseline)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>baseline_data</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Baseline Data List</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Internal Treated</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;  patid ext trt</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;      1   0   1</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;      2   0   1</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;      3   0   1</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;      4   0   1</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;      5   0   1</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;      6   0   1</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; Internal Control</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;  patid ext trt</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt;    101   0   0</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt;    102   0   0</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt;    103   0   0</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt;    104   0   0</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt;    105   0   0</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt;    106   0   0</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; External Control</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt;  patid ext trt</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt;    151   1   0</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt;    152   1   0</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt;    153   1   0</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt;    154   1   0</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt;    155   1   0</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt;    156   1   0</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="fu">as.data.frame</span>(baseline_data)</span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;   patid ext trt</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt; 1     1   0   1</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; 2     2   0   1</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; 3     3   0   1</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt; 4     4   0   1</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; 5     5   0   1</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt; 6     6   0   1</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 244 rows ]</span></span></code></pre></div>
+<p>Often we are interested in some additional covariates. Internally the
+package uses multivariate normal distributions, so we need to specify
+the means and (co-)variances. We have the option to specify different
+distribution parameters for the internal and external arms. The internal
+arms are assumed to be randomized and therefore come from the same
+distribution. If no external parameters are specified, the internal ones
+are used for both.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>with_age <span class="ot">&lt;-</span> <span class="fu">create_baseline_object</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">n_trt_int =</span> <span class="dv">100</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">n_ctrl_int =</span> <span class="dv">50</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">n_ctrl_ext =</span> <span class="dv">100</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">covariates =</span> <span class="fu">baseline_covariates</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">names =</span> <span class="st">&quot;age&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">means_int =</span> <span class="dv">55</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">covariance_int =</span> <span class="fu">covariance_matrix</span>(<span class="dv">5</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  )</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">generate</span>(with_age)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; Baseline Data List</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; Internal Treated</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt;  patid ext trt      age</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt;      1   0   1 53.74674</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt;      2   0   1 54.48531</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt;      3   0   1 58.48538</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt;      4   0   1 55.15766</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;      5   0   1 55.28910</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 1 rows ]</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; Internal Control</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt;  patid ext trt      age</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt;    101   0   0 53.41148</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;    102   0   0 55.57441</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt;    103   0   0 54.44838</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt;    104   0   0 54.22287</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;    105   0   0 52.87212</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 1 rows ]</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; External Control</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt;  patid ext trt      age</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt;    151   1   0 56.76144</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt;    152   1   0 56.71963</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt;    153   1   0 55.74283</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt;    154   1   0 52.74520</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt;    155   1   0 54.73290</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 1 rows ]</span></span></code></pre></div>
+<p>In a more complex setting, we can generate correlated baseline
+covariates by specifying a variance-covariance matrix as the main
+diagonal (variance components) and the upper triangle (covariance
+components).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">covariance_matrix</span>(<span class="at">diag =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">1.2</span>), <span class="at">upper_tri =</span> <span class="fu">c</span>(<span class="fl">0.1</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt;      [,1] [,2]</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; [1,]  5.0  0.1</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; [2,]  0.1  1.2</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>with_age_score <span class="ot">&lt;-</span> <span class="fu">create_baseline_object</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">n_trt_int =</span> <span class="dv">100</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">n_ctrl_int =</span> <span class="dv">50</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">n_ctrl_ext =</span> <span class="dv">100</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">covariates =</span> <span class="fu">baseline_covariates</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;score&quot;</span>),</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">means_int =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">5</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">means_ext =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">5</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">covariance_int =</span> <span class="fu">covariance_matrix</span>(<span class="at">diag =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">1</span>)),</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="at">covariance_ext =</span> <span class="fu">covariance_matrix</span>(<span class="at">diag =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">1.2</span>), <span class="at">upper_tri =</span> <span class="fu">c</span>(<span class="fl">0.1</span>))</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  )</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>)</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>data_age_score <span class="ot">&lt;-</span> <span class="fu">generate</span>(with_age_score)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>df_age_score <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(data_age_score)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">x =</span> df_age_score<span class="sc">$</span>age,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">y =</span> df_age_score<span class="sc">$</span>score,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">col =</span> df_age_score<span class="sc">$</span>trt <span class="sc">+</span> <span class="dv">1</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">pch =</span> df_age_score<span class="sc">$</span>ext <span class="sc">*</span> <span class="dv">16</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">&quot;Age&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="st">&quot;Score&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="fu">legend</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="st">&quot;topright&quot;</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;internal treated&quot;</span>, <span class="st">&quot;internal control&quot;</span>, <span class="st">&quot;external control&quot;</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">16</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>)</span></code></pre></div>
+<div class="float">
+<img src="data:image/png;base64,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+OMPevLJJ1V5SIAACJiTAAy8OfsVrQIB2rVrFyiAAAi4MQEck3PjzkfTQQAEQAAEzEsABt68fYuWgQAIgAAIuDEBGHg37nw0HQRAAARAwLwEYODN27doGQiAAAiAgBsTgIF3485H00EABEAABMxLAAbevH2LloEACIAACLgxARh4N+58NB0EQAAEQMC8BGDgzdu3aBkIgAAIgIAbE4CBd+POR9NBAARAAATMS8DDIol5m1fcsoMHD9KgQYOIQ2g6WwqkwCe//PILBQYGOrsqlO8iApmZmehPF7F2RTXoT1dQdl0dWVlZFBsbS8HBwa6rtII1nT17ljZt2kQxMTEVfMJxt7mNgXccsvJLys7OppEjR9K6devKvxl3GIJAz549xY82QygLJcslgP4sF5Ghbhg3bhzNnj2b6tSpYyi9na0spuidTRjlgwAIgAAIgIAGBGDgNYCOKkEABEAABEDA2QRg4J1NGOWDAAiAAAiAgAYEYOA1gI4qQQAEQAAEQMDZBGDgnU0Y5YMACIAACICABgRg4DWAjipBAARAAARAwNkEcEzOCYTZtcC1a9eoVq1aTigdRWpB4MqVKxQdHa1F1ajTCQTQn06AqmGRycnJFB4eTl5eXhpqob+qYeD11yfQCARAAARAAATsJoApersRogAQAAEQAAEQ0B8BGHj99Qk0AgEQAAEQAAG7CcDA240QBYAACIAACICA/gjAwOuvT6ARCIAACIAACNhNAAbeboQoAARAAARAAAT0RwAGXn99Ao1AAARAAARAwG4CMPB2I0QBIAACIAACIKA/AjDw+usTaAQCIAACIAACdhOAgbcT4d69e6levXqq16VLl0SpaWlpNHr0aKpTpw61bt2a9u3bZ2dteNwVBGJjY1X9uWDBAlHtnfraFXqhjqoRmD9/PjVu3JiaNm1Kzz77LBUWFoqC8P2sGk+tnzp06BB16NCB6tevT0OGDKGTJ08qKpX13VVucLMLbzdrr8Oby//pd+3alWbPnq2ULbuofeqpp6hJkya0ZMkS2rBhAw0dOpQSEhLIz89PuRcX+iKQmppKp06dosOHDyuKhYWFies79bVyMy50RWD79u3EBn7Xrl0UFBRE48aNo++++47GjBlD+H7qqqsqpEx+fr4YNH300UfUt29fiouLo+nTp9OKFSvoTt/dChVuwptg4O3sVP412b17d/Lw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" alt="plot of chunk unnamed-chunk-6" />
+<div class="figcaption">plot of chunk unnamed-chunk-6</div>
+</div>
+<p>Finally, we have the option to transform non-normal covariates, such
+as with binary cut-offs. These can be added to existing objects and can
+use built-in functions or used defined.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>with_age_score <span class="ot">&lt;-</span> with_age_score <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">set_transformations</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="at">score_high =</span> <span class="fu">binary_cutoff</span>(<span class="st">&quot;score&quot;</span>, <span class="at">int_cutoff =</span> <span class="fl">0.7</span>, <span class="at">ext_cutoff =</span> <span class="fl">0.7</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="at">score_rounded =</span> <span class="cf">function</span>(data) <span class="fu">round</span>(data<span class="sc">$</span>score)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  )</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="fu">generate</span>(with_age_score)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; Baseline Data List</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Internal Treated</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;  patid ext trt      age    score score_high score_rounded</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt;      1   0   1 53.74674 4.769823          0             5</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;      2   0   1 58.48538 5.070508          0             5</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 4 rows ]</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; Internal Control</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt;  patid ext trt      age    score score_high score_rounded</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt;    101   0   0 59.91669 6.312413          1             6</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt;    102   0   0 54.40712 5.543194          1             6</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 4 rows ]</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; External Control</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt;  patid ext trt      age    score score_high score_rounded</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt;    151   1   0 58.40067 4.247311          0             4</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt;    152   1   0 57.90136 3.947487          0             4</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 4 rows ]</span></span></code></pre></div>
+</div>
+<div id="generating-survival-data" class="section level2">
+<h2>Generating Survival Data</h2>
+<p>Using the baseline object we have specified, we can generate survival
+outcome data including various parameters like dropout rate, enrollment
+rate and clinical cut-off.</p>
+<p>First we need to specify the outcome distribution. The underlying
+data generation is handled by the <code>simsurv</code> package. The
+<code>create_event_dist()</code> function take the parameters needed to
+define the distribution. In the simplest case we can use an exponential
+distribution by specifying a single <code>lambda</code> parameter. We
+could also use Weibull or Gompertz distributions, mixtures of
+distributions, or even specify an arbitrary (log/cumulative) hazard
+function.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>exponential_dist <span class="ot">&lt;-</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambda =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">24</span>)</span></code></pre></div>
+<p>The minimum required parameters to create a data simulation object
+are a baseline object and an event distribution.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">create_data_simulation</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">baseline =</span> <span class="fu">create_baseline_object</span>(<span class="at">n_trt_int =</span> <span class="dv">100</span>, <span class="at">n_ctrl_int =</span> <span class="dv">50</span>, <span class="at">n_ctrl_ext =</span> <span class="dv">100</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">event_dist =</span> exponential_dist</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">generate</span>()</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; SimDataList object with  1  different scenarios</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;   sim_id treatment_hr drift_hr n_datasets_per_param</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; 1      1            1        1                    1</span></span></code></pre></div>
+<p>We can expand by including a baseline object with covariates and so
+we need coefficients for including them in the hazard calculation.
+Further we can include coefficient for the treatment parameter
+(<code>treatment_hr</code>) and for the difference between internal and
+external arms (<code>drift_hr</code>).</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>data_sim <span class="ot">&lt;-</span> <span class="fu">create_data_simulation</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="at">baseline =</span> with_age_score,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">coefficients =</span> <span class="fu">c</span>(<span class="at">age =</span> <span class="fl">0.001</span>, <span class="at">score_high =</span> <span class="fl">1.5</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">event_dist =</span> exponential_dist,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">treatment_hr =</span> <span class="fl">0.5</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">drift_hr =</span> <span class="fl">0.9</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>data_list <span class="ot">&lt;-</span> <span class="fu">generate</span>(data_sim)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>data_list</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; SimDataList object with  1  different scenarios</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt;   sim_id treatment_hr drift_hr n_datasets_per_param</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; 1      1          0.5      0.9                    1</span></span></code></pre></div>
+<p>We can peek at the data with <code>get_data()</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">get_data</span>(data_list, <span class="at">index =</span> <span class="dv">1</span>, <span class="at">dataset =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt;   patid      age score_high trt ext  eventtime status enrollment cens</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; 1     1 53.25887          0   1   0 163.587989      1          1    0</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; 2     2 55.64217          0   1   0   6.884799      1          1    0</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt;  [ reached getOption(&quot;max.print&quot;) -- omitted 4 rows ]</span></span></code></pre></div>
+<p>We can control how datasets are generated with the <code>n</code>,
+<code>treatment_hr</code> and <code>drift_hr</code> parameters of
+<code>generate()</code>. These will override the defaults specified in
+<code>create_data_simulation()</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">generate</span>(data_sim, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">treatment_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.3</span>, <span class="dv">2</span>), <span class="at">drift_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.2</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; SimDataList object with  6  different scenarios</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt;   sim_id treatment_hr drift_hr n_datasets_per_param</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; 1      1          1.0      1.0                   10</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; 2      2          1.3      1.0                   10</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; 3      3          2.0      1.0                   10</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 4      4          1.0      1.2                   10</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; 5      5          1.3      1.2                   10</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 1 rows ]</span></span></code></pre></div>
+<p>To add other features to the simulation there are
+<code>set_enrollment()</code>, <code>set_cut_off()</code> and
+<code>set_dropout()</code> functions which modify a
+<code>DataSimObject</code>.</p>
+<div id="enrollment" class="section level3">
+<h3>Enrollment</h3>
+<p>Currently only one enrollment option is defined,
+<code>enrollment_constant</code> where a fixed number of patients are
+enrolled in each period for a given time duration, so
+<code>enrollment_constant(rate = c(5, 2), for_time = c(4, 5))</code>
+enrolls 5 patients in periods 1, 2, 3, 4, and then 2 patients each in 5,
+6, 7, 8, 9.</p>
+<p>New methods can be specified by defining a function that takes a
+parameter <code>n</code>, the number of patients to generate enrollment
+times for.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>poisson_enrollment <span class="ot">&lt;-</span> <span class="fu">custom_enrollment</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="at">fun =</span> <span class="cf">function</span>(n) <span class="fu">rpois</span>(n, <span class="at">lambda =</span> <span class="dv">5</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="at">label =</span> <span class="st">&quot;Poisson enrollment distribution&quot;</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>)</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="fu">set_enrollment</span>(data_sim, <span class="at">internal =</span> poisson_enrollment)</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; DataSimObject</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; -------------</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; Baseline object:</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; Baseline Data Simulation Object</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt;   N internal treated:  100 </span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt;   N internal control:  50 </span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;   N external control:  100 </span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; Covariates: </span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt;  covariate means_internal means_external</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt;        age             55             60</span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt;      score              5              5</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; Covariance Matrices</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co">#&gt; Internal          External</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co">#&gt;       age score         age score </span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co">#&gt; age     5     0   age   5.0   0.1 </span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt; score   0     1   score 0.1   1.2 </span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co">#&gt; Transformations: </span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="co">#&gt;    score_high, score_rounded </span></span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a><span class="co">#&gt; Event distribution:</span></span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a><span class="co">#&gt; exponential distribution with lambda = 0.0416666666666667 </span></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="co">#&gt; Treatment HR:  0.5 </span></span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a><span class="co">#&gt; Drift HR:  0.9 </span></span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a><span class="co">#&gt;        age score_high </span></span>
+<span id="cb13-37"><a href="#cb13-37" tabindex="-1"></a><span class="co">#&gt;      0.001      1.500 </span></span>
+<span id="cb13-38"><a href="#cb13-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-39"><a href="#cb13-39" tabindex="-1"></a><span class="co">#&gt; Enrollment:</span></span>
+<span id="cb13-40"><a href="#cb13-40" tabindex="-1"></a><span class="co">#&gt;  Internal: Poisson enrollment distribution </span></span>
+<span id="cb13-41"><a href="#cb13-41" tabindex="-1"></a><span class="co">#&gt;  External: Poisson enrollment distribution </span></span>
+<span id="cb13-42"><a href="#cb13-42" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-43"><a href="#cb13-43" tabindex="-1"></a><span class="co">#&gt; Dropout:</span></span>
+<span id="cb13-44"><a href="#cb13-44" tabindex="-1"></a><span class="co">#&gt;  Internal treated: No distribution specified </span></span>
+<span id="cb13-45"><a href="#cb13-45" tabindex="-1"></a><span class="co">#&gt;  Internal control: No distribution specified </span></span>
+<span id="cb13-46"><a href="#cb13-46" tabindex="-1"></a><span class="co">#&gt;  External control: No distribution specified </span></span>
+<span id="cb13-47"><a href="#cb13-47" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-48"><a href="#cb13-48" tabindex="-1"></a><span class="co">#&gt; Clinical cut off:</span></span>
+<span id="cb13-49"><a href="#cb13-49" tabindex="-1"></a><span class="co">#&gt;  Internal: No cut off </span></span>
+<span id="cb13-50"><a href="#cb13-50" tabindex="-1"></a><span class="co">#&gt;  External: No cut off</span></span></code></pre></div>
+</div>
+<div id="drop-out" class="section level3">
+<h3>Drop Out</h3>
+<p>Drop out is defined using the same <code>create_event_dist()</code>
+function as for the survival time. No covariates can be specified for
+these distributions, but we can set different distributions for the
+three arms.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">set_dropout</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  data_sim,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="at">internal_treated =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">50</span>),</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="at">internal_control =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">55</span>),</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="at">external_control =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;weibull&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">40</span>, <span class="at">gammas =</span> <span class="fl">1.1</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>)</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; DataSimObject</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; -------------</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; Baseline object:</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; Baseline Data Simulation Object</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt;   N internal treated:  100 </span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt;   N internal control:  50 </span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt;   N external control:  100 </span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; Covariates: </span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt;  covariate means_internal means_external</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt;        age             55             60</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt;      score              5              5</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; Covariance Matrices</span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt; Internal          External</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt;       age score         age score </span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; age     5     0   age   5.0   0.1 </span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; score   0     1   score 0.1   1.2 </span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; Transformations: </span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt;    score_high, score_rounded </span></span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt; Event distribution:</span></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt; exponential distribution with lambda = 0.0416666666666667 </span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt; Treatment HR:  0.5 </span></span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt; Drift HR:  0.9 </span></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt;        age score_high </span></span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt;      0.001      1.500 </span></span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a><span class="co">#&gt; Enrollment:</span></span>
+<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a><span class="co">#&gt;  Internal: Enrolling 1 patient per time </span></span>
+<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a><span class="co">#&gt;  External: Enrolling 1 patient per time </span></span>
+<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a><span class="co">#&gt; Dropout:</span></span>
+<span id="cb14-45"><a href="#cb14-45" tabindex="-1"></a><span class="co">#&gt;  Internal treated: exponential distribution with lambda = 0.02 </span></span>
+<span id="cb14-46"><a href="#cb14-46" tabindex="-1"></a><span class="co">#&gt;  Internal control: exponential distribution with lambda = 0.0181818181818182 </span></span>
+<span id="cb14-47"><a href="#cb14-47" tabindex="-1"></a><span class="co">#&gt;  External control: weibull distribution with lambda = 0.025 and gamma = 1.1 </span></span>
+<span id="cb14-48"><a href="#cb14-48" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-49"><a href="#cb14-49" tabindex="-1"></a><span class="co">#&gt; Clinical cut off:</span></span>
+<span id="cb14-50"><a href="#cb14-50" tabindex="-1"></a><span class="co">#&gt;  Internal: No cut off </span></span>
+<span id="cb14-51"><a href="#cb14-51" tabindex="-1"></a><span class="co">#&gt;  External: No cut off</span></span></code></pre></div>
+</div>
+</div>
+<div id="clinical-cut-off" class="section level2">
+<h2>Clinical Cut Off</h2>
+<p>In some cases we want to mimic a clinical trial cut off rule, where
+all patient data after a certain time are censored. Different rules are
+available such as: - fixed time after first patient is enrolled
+<code>cut_off_after_first(time = 36)</code> - fixed time after last
+patient is enrolled <code>cut_off_after_first(time = 60)</code> - fixed
+number of events observed <code>cut_off_after_events(n = 45)</code></p>
+<p>If a patient has survival time longer than these rules their status
+will be set to <code>0</code> and <code>eventtime</code> set to the cut
+off time.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">set_cut_off</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  data_sim,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="at">internal =</span> <span class="fu">cut_off_after_first</span>(<span class="at">time =</span> <span class="dv">36</span>),</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="at">external =</span> <span class="fu">cut_off_after_events</span>(<span class="at">n =</span> <span class="dv">45</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>)</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt; DataSimObject</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt; -------------</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; Baseline object:</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt; Baseline Data Simulation Object</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt;   N internal treated:  100 </span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt;   N internal control:  50 </span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt;   N external control:  100 </span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt; Covariates: </span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt;  covariate means_internal means_external</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt;        age             55             60</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#&gt;      score              5              5</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; Covariance Matrices</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt; Internal          External</span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt;       age score         age score </span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; age     5     0   age   5.0   0.1 </span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; score   0     1   score 0.1   1.2 </span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; Transformations: </span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt;    score_high, score_rounded </span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a><span class="co">#&gt; Event distribution:</span></span>
+<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a><span class="co">#&gt; exponential distribution with lambda = 0.0416666666666667 </span></span>
+<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a><span class="co">#&gt; Treatment HR:  0.5 </span></span>
+<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a><span class="co">#&gt; Drift HR:  0.9 </span></span>
+<span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a><span class="co">#&gt;        age score_high </span></span>
+<span id="cb15-37"><a href="#cb15-37" tabindex="-1"></a><span class="co">#&gt;      0.001      1.500 </span></span>
+<span id="cb15-38"><a href="#cb15-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-39"><a href="#cb15-39" tabindex="-1"></a><span class="co">#&gt; Enrollment:</span></span>
+<span id="cb15-40"><a href="#cb15-40" tabindex="-1"></a><span class="co">#&gt;  Internal: Enrolling 1 patient per time </span></span>
+<span id="cb15-41"><a href="#cb15-41" tabindex="-1"></a><span class="co">#&gt;  External: Enrolling 1 patient per time </span></span>
+<span id="cb15-42"><a href="#cb15-42" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-43"><a href="#cb15-43" tabindex="-1"></a><span class="co">#&gt; Dropout:</span></span>
+<span id="cb15-44"><a href="#cb15-44" tabindex="-1"></a><span class="co">#&gt;  Internal treated: No distribution specified </span></span>
+<span id="cb15-45"><a href="#cb15-45" tabindex="-1"></a><span class="co">#&gt;  Internal control: No distribution specified </span></span>
+<span id="cb15-46"><a href="#cb15-46" tabindex="-1"></a><span class="co">#&gt;  External control: No distribution specified </span></span>
+<span id="cb15-47"><a href="#cb15-47" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-48"><a href="#cb15-48" tabindex="-1"></a><span class="co">#&gt; Clinical cut off:</span></span>
+<span id="cb15-49"><a href="#cb15-49" tabindex="-1"></a><span class="co">#&gt;  Internal: Cut off after first enrolled patient reaches time = 36 </span></span>
+<span id="cb15-50"><a href="#cb15-50" tabindex="-1"></a><span class="co">#&gt;  External: Cut off after 45 events</span></span></code></pre></div>
+</div>
+<div id="running-a-simulation" class="section level2">
+<h2>Running a simulation</h2>
+<p>Putting all that together:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>my_baseline <span class="ot">&lt;-</span> <span class="fu">create_baseline_object</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="at">n_trt_int =</span> <span class="dv">100</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="at">n_ctrl_int =</span> <span class="dv">50</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="at">n_ctrl_ext =</span> <span class="dv">100</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  <span class="at">covariates =</span> <span class="fu">baseline_covariates</span>(</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>    <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;score&quot;</span>),</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>    <span class="at">means_int =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">5</span>),</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>    <span class="at">means_ext =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">5</span>),</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>    <span class="at">covariance_int =</span> <span class="fu">covariance_matrix</span>(<span class="at">diag =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">1</span>)),</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>    <span class="at">covariance_ext =</span> <span class="fu">covariance_matrix</span>(<span class="at">diag =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">1.2</span>), <span class="at">upper_tri =</span> <span class="fu">c</span>(<span class="fl">0.1</span>))</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>  ),</span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>  <span class="at">transformations =</span> <span class="fu">list</span>(<span class="at">score_high =</span> <span class="fu">binary_cutoff</span>(<span class="st">&quot;score&quot;</span>, <span class="at">int_cutoff =</span> <span class="fl">0.7</span>, <span class="at">ext_cutoff =</span> <span class="fl">0.7</span>))</span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>)</span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>my_data_sim_setup <span class="ot">&lt;-</span> <span class="fu">create_data_simulation</span>(</span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>  <span class="at">baseline =</span> my_baseline,</span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a>  <span class="at">coefficients =</span> <span class="fu">c</span>(<span class="at">age =</span> <span class="fl">0.001</span>, <span class="at">score_high =</span> <span class="fl">1.1</span>),</span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>  <span class="at">event_dist =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">50</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a>  <span class="fu">set_enrollment</span>(</span>
+<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a>    <span class="at">internal =</span> <span class="fu">enrollment_constant</span>(<span class="at">rate =</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">10</span>), <span class="at">for_time =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">30</span>)),</span>
+<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a>    <span class="at">external =</span> <span class="fu">enrollment_constant</span>(<span class="at">rate =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">10</span>), <span class="at">for_time =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">30</span>))</span>
+<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a>  <span class="fu">set_dropout</span>(</span>
+<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a>    <span class="at">internal_treated =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">50</span>),</span>
+<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a>    <span class="at">internal_control =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">55</span>),</span>
+<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a>    <span class="at">external_control =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">40</span>)</span>
+<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a>  <span class="fu">set_cut_off</span>(</span>
+<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a>    <span class="at">internal =</span> <span class="fu">cut_off_after_first</span>(<span class="at">time =</span> <span class="dv">60</span>),</span>
+<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a>    <span class="at">external =</span> <span class="fu">cut_off_after_events</span>(<span class="at">n =</span> <span class="dv">100</span>)</span>
+<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a>  )</span>
+<span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a></span>
+<span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a>my_data_list <span class="ot">&lt;-</span> <span class="fu">generate</span>(my_data_sim_setup, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">treatment_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.3</span>), <span class="at">drift_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.2</span>))</span></code></pre></div>
+<p>Now we can define the simulation setup for the models:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>borrowing <span class="ot">&lt;-</span> <span class="fu">sim_borrowing_list</span>(<span class="fu">list</span>(<span class="at">full =</span> <span class="fu">borrowing_full</span>(<span class="st">&quot;ext&quot;</span>)))</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>outcome <span class="ot">&lt;-</span> <span class="fu">sim_outcome_list</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">standard_outcome =</span> <span class="fu">outcome_surv_exponential</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>    <span class="at">time_var =</span> <span class="st">&quot;eventtime&quot;</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>    <span class="at">cens_var =</span> <span class="st">&quot;cens&quot;</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    <span class="at">baseline_prior =</span> <span class="fu">prior_normal</span>(<span class="dv">0</span>, <span class="dv">1000</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>  ))</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>)</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>covariate <span class="ot">&lt;-</span> <span class="fu">sim_covariate_list</span>(<span class="fu">list</span>(</span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a>  <span class="at">cov1 =</span> <span class="fu">add_covariates</span>(<span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;score_high&quot;</span>), <span class="fu">prior_normal</span>(<span class="dv">0</span>, <span class="dv">1000</span>)),</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>  <span class="at">no_covs =</span> <span class="cn">NULL</span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>))</span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>treatment <span class="ot">&lt;-</span> <span class="fu">sim_treatment_list</span>(</span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">standard_tx =</span> <span class="fu">treatment_details</span>(<span class="at">trt_flag_col =</span> <span class="st">&quot;trt&quot;</span>, <span class="at">trt_prior =</span> <span class="fu">prior_normal</span>(<span class="dv">0</span>, <span class="dv">1000</span>)))</span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a>)</span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a>sim_obj <span class="ot">&lt;-</span> <span class="fu">create_simulation_obj</span>(</span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a>  <span class="at">data_matrix_list =</span> my_data_list,</span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a>  <span class="at">outcome =</span> outcome,</span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>  <span class="at">borrowing =</span> borrowing,</span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a>  <span class="at">treatment =</span> treatment,</span>
+<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a>  <span class="at">covariate =</span> covariate</span>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>)</span></code></pre></div>
+<p>And finally sample from these models. See the vignette “4. Conduct a
+simulation study” for more details.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>sim_results <span class="ot">&lt;-</span> <span class="fu">mcmc_sample</span>(sim_obj, <span class="at">chains =</span> <span class="dv">1</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">get_results</span>(sim_results)</span></code></pre></div>
+<div id="using-fixed-external-data" class="section level3">
+<h3>Using fixed external data</h3>
+<p>We can also include a known data set as the external data, if we wish
+to simulate the operating characteristics of using previously collected
+data. This is done by setting the <code>external_data</code> argument in
+<code>create_data_simulation</code> to a data frame. This data is
+included after enrollment, cut-off and dropout functions are applied, so
+these have no effect on the fixed data.</p>
+<p>It is possible to include a fixed external dataset and additionally
+simulate external patients by setting <code>n_ctrl_ext</code> to a
+non-zero value. This will simulate external patients in addition to the
+fixed data.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>historical_trial_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">rnorm</span>(<span class="dv">40</span>, <span class="dv">60</span>, <span class="dv">5</span>),</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>  <span class="at">score_high =</span> <span class="fu">rbinom</span>(<span class="dv">40</span>, <span class="dv">1</span>, <span class="fl">0.7</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>  <span class="at">trt =</span> <span class="dv">0</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>  <span class="at">eventtime =</span> <span class="fu">rexp</span>(<span class="dv">40</span>, <span class="dv">1</span> <span class="sc">/</span> <span class="dv">50</span>),</span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>  <span class="at">status =</span> <span class="dv">1</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>  <span class="at">enrollment =</span> <span class="dv">1</span> <span class="co"># enrollment is specified here but not used in clinical cut off</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>)</span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>my_internal_baseline <span class="ot">&lt;-</span> <span class="fu">create_baseline_object</span>(</span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>  <span class="at">n_trt_int =</span> <span class="dv">100</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>  <span class="at">n_ctrl_int =</span> <span class="dv">50</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>  <span class="at">n_ctrl_ext =</span> <span class="dv">0</span>,</span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a>  <span class="at">covariates =</span> <span class="fu">baseline_covariates</span>(</span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>    <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;score&quot;</span>),</span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a>    <span class="at">means_int =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">5</span>),</span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a>    <span class="at">means_ext =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">5</span>),</span>
+<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a>    <span class="at">covariance_int =</span> <span class="fu">covariance_matrix</span>(<span class="at">diag =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">1</span>)),</span>
+<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a>    <span class="at">covariance_ext =</span> <span class="fu">covariance_matrix</span>(<span class="at">diag =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="fl">1.2</span>), <span class="at">upper_tri =</span> <span class="fu">c</span>(<span class="fl">0.1</span>))</span>
+<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a>  ),</span>
+<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a>  <span class="at">transformations =</span> <span class="fu">list</span>(<span class="at">score_high =</span> <span class="fu">binary_cutoff</span>(<span class="st">&quot;score&quot;</span>, <span class="at">int_cutoff =</span> <span class="fl">0.7</span>, <span class="at">ext_cutoff =</span> <span class="fl">0.7</span>))</span>
+<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a>)</span>
+<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" tabindex="-1"></a>my_data_sim_setup_with_fixed <span class="ot">&lt;-</span> <span class="fu">create_data_simulation</span>(</span>
+<span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a>  <span class="at">baseline =</span> my_internal_baseline,</span>
+<span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a>  <span class="at">coefficients =</span> <span class="fu">c</span>(<span class="at">age =</span> <span class="fl">0.001</span>, <span class="at">score_high =</span> <span class="fl">1.1</span>),</span>
+<span id="cb19-27"><a href="#cb19-27" tabindex="-1"></a>  <span class="at">event_dist =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">50</span>),</span>
+<span id="cb19-28"><a href="#cb19-28" tabindex="-1"></a>  <span class="at">fixed_external_data =</span> historical_trial_data</span>
+<span id="cb19-29"><a href="#cb19-29" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-30"><a href="#cb19-30" tabindex="-1"></a>  <span class="fu">set_enrollment</span>(</span>
+<span id="cb19-31"><a href="#cb19-31" tabindex="-1"></a>    <span class="at">internal =</span> <span class="fu">enrollment_constant</span>(<span class="at">rate =</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">10</span>), <span class="at">for_time =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">30</span>)),</span>
+<span id="cb19-32"><a href="#cb19-32" tabindex="-1"></a>    <span class="at">external =</span> <span class="fu">enrollment_constant</span>(<span class="at">rate =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">10</span>), <span class="at">for_time =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">30</span>))</span>
+<span id="cb19-33"><a href="#cb19-33" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb19-34"><a href="#cb19-34" tabindex="-1"></a>  <span class="fu">set_dropout</span>(</span>
+<span id="cb19-35"><a href="#cb19-35" tabindex="-1"></a>    <span class="at">internal_treated =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">50</span>),</span>
+<span id="cb19-36"><a href="#cb19-36" tabindex="-1"></a>    <span class="at">internal_control =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">55</span>),</span>
+<span id="cb19-37"><a href="#cb19-37" tabindex="-1"></a>    <span class="at">external_control =</span> <span class="fu">create_event_dist</span>(<span class="at">dist =</span> <span class="st">&quot;exponential&quot;</span>, <span class="at">lambdas =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">40</span>)</span>
+<span id="cb19-38"><a href="#cb19-38" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb19-39"><a href="#cb19-39" tabindex="-1"></a>  <span class="fu">set_cut_off</span>(</span>
+<span id="cb19-40"><a href="#cb19-40" tabindex="-1"></a>    <span class="at">internal =</span> <span class="fu">cut_off_after_first</span>(<span class="at">time =</span> <span class="dv">60</span>),</span>
+<span id="cb19-41"><a href="#cb19-41" tabindex="-1"></a>    <span class="at">external =</span> <span class="fu">cut_off_after_events</span>(<span class="at">n =</span> <span class="dv">100</span>)</span>
+<span id="cb19-42"><a href="#cb19-42" tabindex="-1"></a>  )</span>
+<span id="cb19-43"><a href="#cb19-43" tabindex="-1"></a>my_data_sim_setup_with_fixed</span>
+<span id="cb19-44"><a href="#cb19-44" tabindex="-1"></a><span class="co">#&gt; DataSimObject</span></span>
+<span id="cb19-45"><a href="#cb19-45" tabindex="-1"></a><span class="co">#&gt; -------------</span></span>
+<span id="cb19-46"><a href="#cb19-46" tabindex="-1"></a><span class="co">#&gt; Baseline object:</span></span>
+<span id="cb19-47"><a href="#cb19-47" tabindex="-1"></a><span class="co">#&gt; Baseline Data Simulation Object</span></span>
+<span id="cb19-48"><a href="#cb19-48" tabindex="-1"></a><span class="co">#&gt;   N internal treated:  100 </span></span>
+<span id="cb19-49"><a href="#cb19-49" tabindex="-1"></a><span class="co">#&gt;   N internal control:  50 </span></span>
+<span id="cb19-50"><a href="#cb19-50" tabindex="-1"></a><span class="co">#&gt;   N external control:  0 </span></span>
+<span id="cb19-51"><a href="#cb19-51" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-52"><a href="#cb19-52" tabindex="-1"></a><span class="co">#&gt; Covariates: </span></span>
+<span id="cb19-53"><a href="#cb19-53" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb19-54"><a href="#cb19-54" tabindex="-1"></a><span class="co">#&gt;  covariate means_internal means_external</span></span>
+<span id="cb19-55"><a href="#cb19-55" tabindex="-1"></a><span class="co">#&gt;        age             55             60</span></span>
+<span id="cb19-56"><a href="#cb19-56" tabindex="-1"></a><span class="co">#&gt;      score              5              5</span></span>
+<span id="cb19-57"><a href="#cb19-57" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-58"><a href="#cb19-58" tabindex="-1"></a><span class="co">#&gt; Covariance Matrices</span></span>
+<span id="cb19-59"><a href="#cb19-59" tabindex="-1"></a><span class="co">#&gt; Internal          External</span></span>
+<span id="cb19-60"><a href="#cb19-60" tabindex="-1"></a><span class="co">#&gt;       age score         age score </span></span>
+<span id="cb19-61"><a href="#cb19-61" tabindex="-1"></a><span class="co">#&gt; age     5     0   age   5.0   0.1 </span></span>
+<span id="cb19-62"><a href="#cb19-62" tabindex="-1"></a><span class="co">#&gt; score   0     1   score 0.1   1.2 </span></span>
+<span id="cb19-63"><a href="#cb19-63" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-64"><a href="#cb19-64" tabindex="-1"></a><span class="co">#&gt; Transformations: </span></span>
+<span id="cb19-65"><a href="#cb19-65" tabindex="-1"></a><span class="co">#&gt;    score_high </span></span>
+<span id="cb19-66"><a href="#cb19-66" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-67"><a href="#cb19-67" tabindex="-1"></a><span class="co">#&gt; Event distribution:</span></span>
+<span id="cb19-68"><a href="#cb19-68" tabindex="-1"></a><span class="co">#&gt; exponential distribution with lambda = 0.02 </span></span>
+<span id="cb19-69"><a href="#cb19-69" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-70"><a href="#cb19-70" tabindex="-1"></a><span class="co">#&gt; Treatment HR:  1 </span></span>
+<span id="cb19-71"><a href="#cb19-71" tabindex="-1"></a><span class="co">#&gt; Drift HR:  1 </span></span>
+<span id="cb19-72"><a href="#cb19-72" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-73"><a href="#cb19-73" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb19-74"><a href="#cb19-74" tabindex="-1"></a><span class="co">#&gt;        age score_high </span></span>
+<span id="cb19-75"><a href="#cb19-75" tabindex="-1"></a><span class="co">#&gt;      0.001      1.100 </span></span>
+<span id="cb19-76"><a href="#cb19-76" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-77"><a href="#cb19-77" tabindex="-1"></a><span class="co">#&gt; Enrollment:</span></span>
+<span id="cb19-78"><a href="#cb19-78" tabindex="-1"></a><span class="co">#&gt;  Internal: Enrolling patients per time at rates: 25, 25, 25, 25, 10, 10, 10, 10, 10, 10, 10, 10.... </span></span>
+<span id="cb19-79"><a href="#cb19-79" tabindex="-1"></a><span class="co">#&gt;  External: Enrolling patients per time at rates: 30, 30, 30, 30, 10, 10, 10, 10, 10, 10, 10, 10.... </span></span>
+<span id="cb19-80"><a href="#cb19-80" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-81"><a href="#cb19-81" tabindex="-1"></a><span class="co">#&gt; Dropout:</span></span>
+<span id="cb19-82"><a href="#cb19-82" tabindex="-1"></a><span class="co">#&gt;  Internal treated: exponential distribution with lambda = 0.02 </span></span>
+<span id="cb19-83"><a href="#cb19-83" tabindex="-1"></a><span class="co">#&gt;  Internal control: exponential distribution with lambda = 0.0181818181818182 </span></span>
+<span id="cb19-84"><a href="#cb19-84" tabindex="-1"></a><span class="co">#&gt;  External control: exponential distribution with lambda = 0.025 </span></span>
+<span id="cb19-85"><a href="#cb19-85" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-86"><a href="#cb19-86" tabindex="-1"></a><span class="co">#&gt; Clinical cut off:</span></span>
+<span id="cb19-87"><a href="#cb19-87" tabindex="-1"></a><span class="co">#&gt;  Internal: Cut off after first enrolled patient reaches time = 60 </span></span>
+<span id="cb19-88"><a href="#cb19-88" tabindex="-1"></a><span class="co">#&gt;  External: Cut off after 100 events </span></span>
+<span id="cb19-89"><a href="#cb19-89" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-90"><a href="#cb19-90" tabindex="-1"></a><span class="co">#&gt; Fixed external data:</span></span>
+<span id="cb19-91"><a href="#cb19-91" tabindex="-1"></a><span class="co">#&gt;  Columns: age, score_high, trt, eventtime, status, enrollment, ext </span></span>
+<span id="cb19-92"><a href="#cb19-92" tabindex="-1"></a><span class="co">#&gt;  N: 40</span></span>
+<span id="cb19-93"><a href="#cb19-93" tabindex="-1"></a></span>
+<span id="cb19-94"><a href="#cb19-94" tabindex="-1"></a><span class="co"># Drift is not be used for the fixed external data!</span></span>
+<span id="cb19-95"><a href="#cb19-95" tabindex="-1"></a><span class="fu">generate</span>(my_data_sim_setup_with_fixed, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">treatment_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.3</span>), <span class="at">drift_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.2</span>))</span>
+<span id="cb19-96"><a href="#cb19-96" tabindex="-1"></a><span class="co">#&gt; Warning: Drift parameter is not applied to fixed external data</span></span>
+<span id="cb19-97"><a href="#cb19-97" tabindex="-1"></a><span class="co">#&gt; SimDataList object with  4  different scenarios</span></span>
+<span id="cb19-98"><a href="#cb19-98" tabindex="-1"></a><span class="co">#&gt;   sim_id treatment_hr drift_hr n_datasets_per_param</span></span>
+<span id="cb19-99"><a href="#cb19-99" tabindex="-1"></a><span class="co">#&gt; 1      1          1.0      1.0                    1</span></span>
+<span id="cb19-100"><a href="#cb19-100" tabindex="-1"></a><span class="co">#&gt; 2      2          1.3      1.0                    1</span></span>
+<span id="cb19-101"><a href="#cb19-101" tabindex="-1"></a><span class="co">#&gt; 3      3          1.0      1.2                    1</span></span>
+<span id="cb19-102"><a href="#cb19-102" tabindex="-1"></a><span class="co">#&gt; 4      4          1.3      1.2                    1</span></span>
+<span id="cb19-103"><a href="#cb19-103" tabindex="-1"></a></span>
+<span id="cb19-104"><a href="#cb19-104" tabindex="-1"></a>external_data_list <span class="ot">&lt;-</span> <span class="fu">generate</span>(my_data_sim_setup_with_fixed, <span class="at">n =</span> <span class="dv">3</span>, <span class="at">treatment_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.3</span>), <span class="at">drift_hr =</span> <span class="fu">c</span>(<span class="dv">1</span>))</span></code></pre></div>
+</div>
+<div id="combining-simulations" class="section level3">
+<h3>Combining simulations</h3>
+<p>Simulation data objects can be combined so that a simulation can be
+run once.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>combined_data_list <span class="ot">&lt;-</span> <span class="fu">c</span>(my_data_list, external_data_list)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>combined_data_list</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; SimDataList object with  6  different scenarios</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt;   sim_id treatment_hr drift_hr n_datasets_per_param</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co">#&gt; 1      1          1.0      1.0                    3</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co">#&gt; 2      2          1.3      1.0                    3</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co">#&gt; 3      3          1.0      1.2                    3</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="co">#&gt; 4      4          1.3      1.2                    3</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co">#&gt; 5      5          1.0      1.0                    3</span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="co">#&gt;  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 1 rows ]</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
