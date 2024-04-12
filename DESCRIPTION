@@ -1,7 +1,7 @@
 Type: Package
 Package: psborrow2
 Title: Bayesian Dynamic Borrowing Analysis and Simulation
-Version: 0.0.3.2
+Version: 0.0.3.3
 Authors@R: c(
    person(
       given = "Matt",
@@ -22,6 +22,30 @@ Authors@R: c(
       role = c("ctb"),
       email = "craig.gower-page@roche.com"
       ),
+   person(
+      given = "Manoj",
+      family = "Khanal",
+      role = c("ctb"),
+      email = "khanal_manoj@lilly.com"
+   ),
+   person(
+      given = "Mingyang",
+      family = "Shan",
+      role = c("ctb"),
+      email = "mingyang.shan@lilly.com"
+   ),
+   person(
+      given = "Kexin",
+      family = "Jin",
+      role = c("ctb"),
+      email = "kexin.jin@bms.com"
+   ),
+   person(
+      given = "Zhi",
+      family = "Yang",
+      role = c("ctb"),
+      email = "zhi.yang@bms.com"
+   ),
    person("Genentech, Inc.", role = c("cph", "fnd"))
    )
 Description: Bayesian dynamic borrowing is an approach to incorporating external
@@ -86,11 +110,15 @@ Collate: 'generics.R' 'prior_class.R' 'covariate_class.R'
 LazyData: true
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2024-04-02 15:30:54 UTC; secrestm
+Packaged: 2024-04-12 19:04:05 UTC; secrestm
 Author: Matt Secrest [aut, cre] (<https://orcid.org/0000-0002-0939-4902>),
   Isaac Gravestock [aut],
   Craig Gower-Page [ctb],
+  Manoj Khanal [ctb],
+  Mingyang Shan [ctb],
+  Kexin Jin [ctb],
+  Zhi Yang [ctb],
   Genentech, Inc. [cph, fnd]
 Maintainer: Matt Secrest <secrestm@gene.com>
 Repository: CRAN
-Date/Publication: 2024-04-03 19:30:02 UTC
+Date/Publication: 2024-04-12 21:10:02 UTC
