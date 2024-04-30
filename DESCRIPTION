@@ -1,7 +1,7 @@
 Type: Package
 Package: psborrow2
 Title: Bayesian Dynamic Borrowing Analysis and Simulation
-Version: 0.0.3.3
+Version: 0.0.3.4
 Authors@R: c(
    person(
       given = "Matt",
@@ -110,7 +110,7 @@ Collate: 'generics.R' 'prior_class.R' 'covariate_class.R'
 LazyData: true
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2024-04-12 19:04:05 UTC; secrestm
+Packaged: 2024-04-30 20:52:27 UTC; secrestm
 Author: Matt Secrest [aut, cre] (<https://orcid.org/0000-0002-0939-4902>),
   Isaac Gravestock [aut],
   Craig Gower-Page [ctb],
@@ -121,4 +121,4 @@ Author: Matt Secrest [aut, cre] (<https://orcid.org/0000-0002-0939-4902>),
   Genentech, Inc. [cph, fnd]
 Maintainer: Matt Secrest <secrestm@gene.com>
 Repository: CRAN
-Date/Publication: 2024-04-12 21:10:02 UTC
+Date/Publication: 2024-04-30 21:30:02 UTC
