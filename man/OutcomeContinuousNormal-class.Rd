@@ -14,15 +14,6 @@ the constructor \code{\link[=outcome_cont_normal]{outcome_cont_normal()}}.
 \section{Slots}{
 
 \describe{
-\item{\code{function_stan_code}}{character. stan function code block containing text to interpolate into stan model.
-Empty string for \code{OutcomeContinuousNormal}.}
-
-\item{\code{param_stan_code}}{character. stan parameter code block containing text to interpolate into stan model.
-Empty string for \code{OutcomeContinuousNormal}.}
-
-\item{\code{likelihood_stan_code}}{character. stan model likelihood code block containing text
-to interpolate into stan model.}
-
 \item{\code{n_param}}{integer. Number of ancillary parameters for the model to estimate (0).}
 
 \item{\code{param_priors}}{list. Named list of prior distributions on the ancillary parameters in the model.
@@ -34,8 +25,6 @@ Empty for \code{OutcomeContinuousNormal}.}
 specifying prior distribution for the baseline outcome.}
 
 \item{\code{name_beta_trt.}}{Named vector for beta_trt.}
-
-\item{\code{name_exp_trt.}}{Named vector for exponentiated beta_trt}
 
 \item{\code{alpha_type.}}{How to interpret alpha.}
 
@@ -49,6 +38,7 @@ Other outcome:
 \code{\link{Outcome-class}},
 \code{\link{OutcomeBinaryLogistic-class}},
 \code{\link{OutcomeSurvExponential-class}},
+\code{\link{OutcomeSurvPEM-class}},
 \code{\link{OutcomeSurvWeibullPH-class}},
 \code{\link{TimeToEvent-class}}
 }

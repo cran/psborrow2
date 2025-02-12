@@ -818,7 +818,8 @@ off time.</p>
 <span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a>  <span class="at">borrowing =</span> borrowing,</span>
 <span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a>  <span class="at">treatment =</span> treatment,</span>
 <span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a>  <span class="at">covariate =</span> covariate</span>
-<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>)</span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co">#&gt; Error in create_simulation_obj(data_matrix_list = my_data_list, outcome = outcome, : Missing data detected in &gt;1 matrix in `data_matrix_list`. Could be one of the following columns: &#39;age&#39;, &#39;score_high&#39;, &#39;ext&#39;, &#39;trt&#39;, &#39;eventtime&#39;, &#39;cens&#39;. Error found in simulation_obj@data_matrix_list@data_list[[1]][[1]]</span></span></code></pre></div>
 <p>And finally sample from these models. See the vignette “4. Conduct a
 simulation study” for more details.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>sim_results <span class="ot">&lt;-</span> <span class="fu">mcmc_sample</span>(sim_obj, <span class="at">chains =</span> <span class="dv">1</span>)</span>

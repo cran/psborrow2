@@ -77,7 +77,7 @@ setMethod(
 
     if (verbose) {
       x@model$sample(
-        data = prepare_stan_data_inputs(x),
+        data = prepare_stan_data_inputs(x@outcome, x@borrowing, x),
         iter_warmup = iter_warmup,
         iter_sampling = iter_sampling,
         chains = chains,
@@ -86,7 +86,7 @@ setMethod(
     } else {
       suppressMessages(
         x@model$sample(
-          data = prepare_stan_data_inputs(x),
+          data = prepare_stan_data_inputs(x@outcome, x@borrowing, x),
           iter_warmup = iter_warmup,
           iter_sampling = iter_sampling,
           chains = chains,
@@ -212,7 +212,7 @@ setMethod(
         "Install `cmdstanr` and create another simulation object with `create_simulation_obj()`, ",
         "then call `mcmc_sample()` again.\n",
         "To install:\n",
-        "install.packages(\"cmdstanr\", repos = c(\"https://mc-stan.org/r-packages/\", getOption(\"repos\")))"
+        "install.packages(\"cmdstanr\", repos = c(\"https://stan-dev.r-universe.dev\", getOption(\"repos\")))"
       )
     }
     # Input checks

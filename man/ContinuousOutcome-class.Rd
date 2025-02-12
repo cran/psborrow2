@@ -10,14 +10,6 @@
 \section{Slots}{
 
 \describe{
-\item{\code{function_stan_code}}{character. Code to include in the Stan functions program block.}
-
-\item{\code{param_stan_code}}{character. Code to include in the Stan parameters program block.}
-
-\item{\code{likelihood_stan_code}}{character. Code defining the likelihood to include in the Stan model program block.}
-
-\item{\code{data_stan_code}}{character. Code to include in the Stan data program block.}
-
 \item{\code{n_param}}{integer. Number of ancillary parameters for the model to estimate.}
 
 \item{\code{param_priors}}{list. Named list of prior distributions on the ancillary parameters in the model.}
@@ -28,8 +20,6 @@
 specifying prior distribution for the baseline outcome.}
 
 \item{\code{name_beta_trt.}}{Named vector for beta_trt.}
-
-\item{\code{name_exp_trt.}}{Named vector for exponentiated beta_trt}
 
 \item{\code{alpha_type.}}{How to interpret alpha.}
 
@@ -43,6 +33,7 @@ Other outcome:
 \code{\link{OutcomeBinaryLogistic-class}},
 \code{\link{OutcomeContinuousNormal-class}},
 \code{\link{OutcomeSurvExponential-class}},
+\code{\link{OutcomeSurvPEM-class}},
 \code{\link{OutcomeSurvWeibullPH-class}},
 \code{\link{TimeToEvent-class}}
 }
