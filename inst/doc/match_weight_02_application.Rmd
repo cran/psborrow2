@@ -4,7 +4,7 @@ bibliography: references.bib
 author: 
   - Manoj Khanal <khanal_manoj@lilly.com>
   - Eli Lilly & Company
-date: "2025-02-11"
+date: "2026-05-11"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{2. Matching and Weighting Application with Dynamic Borrowing}
@@ -36,7 +36,7 @@ We will also consider several Bayesian dynamic borrowing methods
 * Power prior
 
 # Hazard function
-The hazard function of $T$ at time $t$ is defined as the instantaneous rate of the event occurence that is still at risk at time $t$. It is defined as
+The hazard function of $T$ at time $t$ is defined as the instantaneous rate of the event occurrence that is still at risk at time $t$. It is defined as
 
 \begin{equation}
   h(t)=\lim_\limits{\Delta \rightarrow 0 } P\frac{(t\leq T<t+\Delta t|T\geq t)}{\Delta t}=\frac{f(t)}{S(t)},
@@ -123,21 +123,19 @@ where $\tau_\ell$ is the precision parameter that determines the degree of borro
 We first load the following libraries.
 
 
-```r
+``` r
 #Loading the libraries
 library(R2jags)
-#> Warning: package 'R2jags' was built under R version 4.3.2
-#> Warning: package 'coda' was built under R version 4.3.2
+#> Error in `library()`:
+#> ! there is no package called 'R2jags'
 library(psborrow2)
 library(cmdstanr)
-#> Warning: package 'cmdstanr' was built under R version 4.3.3
 library(posterior)
 library(bayesplot)
-#> Warning: package 'bayesplot' was built under R version 4.3.2
 library(kableExtra)
-#> Warning: package 'kableExtra' was built under R version 4.3.2
+#> Error in `library()`:
+#> ! there is no package called 'kableExtra'
 library(survival)
-#> Warning: package 'survival' was built under R version 4.3.3
 ```
 
 ## Example data
@@ -184,7 +182,7 @@ We also load the data set `data_with_weights`.
 
 
 
-```r
+``` r
 data_with_weights <- read.csv("data_with_weights.csv")
 data_with_weights$cnsr <- 1 - data_with_weights$event
 data_with_weights <- data_with_weights[, sapply(data_with_weights, class) %in% c("numeric", "integer")]
@@ -192,11 +190,12 @@ data_with_weights$ext <- 1 - data_with_weights$indicator #External control flag
 data_with_weights$norm.weights=data_with_weights$invprob_weights
 data_with_weights$norm.weights[data_with_weights$ext==1]=data_with_weights$norm.weights[data_with_weights$ext==1]/max(data_with_weights$norm.weights[data_with_weights$ext==1])
 data_with_weights <- as.matrix(data_with_weights)
+
 ```
 
 The first six observations of the data set is shown below.
 
-```r
+``` r
 head(data_with_weights)
 #>      X      Age   Weight   Height Biomarker1 Biomarker2 Smoker Sex ECOG1 group
 #> [1,] 1 56.63723 150.8678 65.79587   39.69306   47.71659      0   1     0     1
@@ -242,7 +241,7 @@ The `psborrow2` package will be used to conduct the analysis.
 
 We use exponential distribution for the outcome model as follows. Non-informative normal prior is used for the baseline parameter. The data `data_with_weights` contain the time and censoring variable. For demonstration purpose, we choose the subject level weight `invprob_weights` calculated using inverse probability of treatment weighting (IPTW). In this step we extract the time, censoring indicator and the normalized weight variables denoted by `time`, `cnsr` and `norm.weights` respectively.
 
-```r
+``` r
 #Outcome
 outcome <- outcome_surv_exponential(
   time_var = "time",
@@ -267,9 +266,9 @@ outcome
 ```
 
 
-Next, the borrowing method is implemented as shown below. We consider Bayesian Dynamic Borrowing (BDB) in which gamma prior is assigned for the commensurability parameter. The `tau_prior` shown below is the hyperparameter of the commensurate prior which determines the degree of borrowing. We assign a gamma prior for this hyperparameter. Furhtermore, we also need to specify a flag for external data which is denoted by `ext`.
+Next, the borrowing method is implemented as shown below. We consider Bayesian Dynamic Borrowing (BDB) in which gamma prior is assigned for the commensurability parameter. The `tau_prior` shown below is the hyperparameter of the commensurate prior which determines the degree of borrowing. We assign a gamma prior for this hyperparameter. Furthermore, we also need to specify a flag for external data which is denoted by `ext`.
 
-```r
+``` r
 #Borrowing
 borrowing <- borrowing_hierarchical_commensurate(
   ext_flag_col = "ext",
@@ -293,7 +292,7 @@ borrowing
 
 Similarly, details regarding the treatment variable is specified below. A Non-informative prior is used for the treatment effect parameter $\gamma$. 
 
-```r
+``` r
 #Treatment
 treatment <- treatment_details(
   trt_flag_col = "group",
@@ -315,7 +314,7 @@ treatment
 Now, all the pieces are brought together to create the analysis object as shown below.
 
 
-```r
+``` r
 #Application
 anls_obj <- create_analysis_obj(
   data_matrix = data_with_weights,
@@ -331,7 +330,7 @@ anls_obj <- create_analysis_obj(
 Finally, we run the MCMC sample for $10,000$ iterations with $3$ chains.
 
 
-```r
+``` r
 niter = 10000
 results.exp.psborrow<- mcmc_sample(anls_obj,
   iter_warmup = round(niter/3),
@@ -341,13 +340,13 @@ results.exp.psborrow<- mcmc_sample(anls_obj,
 )
 #> Running MCMC with 3 sequential chains...
 #> 
-#> Chain 1 finished in 13.3 seconds.
-#> Chain 2 finished in 13.2 seconds.
-#> Chain 3 finished in 12.4 seconds.
+#> Chain 1 finished in 5.7 seconds.
+#> Chain 2 finished in 5.6 seconds.
+#> Chain 3 finished in 5.6 seconds.
 #> 
 #> All 3 chains finished successfully.
-#> Mean chain execution time: 13.0 seconds.
-#> Total execution time: 39.2 seconds.
+#> Mean chain execution time: 5.6 seconds.
+#> Total execution time: 17.2 seconds.
 
 draws1 <- results.exp.psborrow$draws()
 draws1 <- rename_draws_covariates(draws1, anls_obj)
@@ -355,24 +354,24 @@ draws1 <- rename_draws_covariates(draws1, anls_obj)
 
 The summary is shown below.
 
-```r
+``` r
 results.exp.psborrow$summary()
 #> # A tibble: 6 × 10
 #>   variable     mean    median     sd    mad          q5      q95  rhat ess_bulk
 #>   <chr>       <dbl>     <dbl>  <dbl>  <dbl>       <dbl>    <dbl> <dbl>    <dbl>
-#> 1 lp__     -718.    -718.     1.51   1.29   -721.       -716.     1.00   10716.
-#> 2 beta_trt   -0.357   -0.359  0.110  0.111    -0.536      -0.175  1.00   11632.
-#> 3 tau         0.119    0.0505 0.183  0.0694    0.000443    0.470  1.00   12583.
-#> 4 alpha[1]   -0.621   -0.620  0.0910 0.0924   -0.772      -0.474  1.00   11977.
-#> 5 alpha[2]    2.36     2.38   0.374  0.368     1.70        2.93   1.00   18690.
-#> 6 HR_trt      0.704    0.699  0.0778 0.0773    0.585       0.839  1.00   11632.
+#> 1 lp__     -718.    -718.     1.48   1.28   -721.       -716.     1.00   10917.
+#> 2 beta_trt   -0.358   -0.358  0.109  0.108    -0.537      -0.179  1.00   13767.
+#> 3 alpha[1]   -0.621   -0.620  0.0904 0.0902   -0.771      -0.475  1.00   13896.
+#> 4 alpha[2]    2.36     2.38   0.368  0.363     1.72        2.92   1.00   16892.
+#> 5 tau         0.119    0.0507 0.181  0.0697    0.000480    0.463  1.00   12986.
+#> 6 HR_trt      0.704    0.699  0.0768 0.0756    0.585       0.836  1.00   13767.
 #> # ℹ 1 more variable: ess_tail <dbl>
 ```
 
 The histogram of the posterior samples for hazard ratio and commensurability parameter as shown below.
 
 
-```r
+``` r
 bayesplot::mcmc_hist(draws1, c("treatment HR"))
 ```
 
@@ -381,7 +380,7 @@ bayesplot::mcmc_hist(draws1, c("treatment HR"))
 <p class="caption">plot of chunk unnamed-chunk-10</p>
 </div>
 
-```r
+``` r
 bayesplot::mcmc_hist(draws1, c("commensurability parameter"))
 ```
 
@@ -390,28 +389,28 @@ bayesplot::mcmc_hist(draws1, c("commensurability parameter"))
 <p class="caption">plot of chunk unnamed-chunk-10</p>
 </div>
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 ```
 
 The $95\%$ credible interval can be calculated as follows.
 
-```r
+``` r
 summarize_draws(draws1, ~ quantile(.x, probs = c(0.025, 0.975)))
 #> # A tibble: 6 × 3
 #>   variable                                `2.5%`  `97.5%`
 #>   <chr>                                    <dbl>    <dbl>
 #> 1 lp__                               -722.       -716.   
-#> 2 treatment log HR                     -0.569      -0.141
-#> 3 commensurability parameter            0.000109    0.628
-#> 4 baseline log hazard rate, internal   -0.801      -0.448
-#> 5 baseline log hazard rate, external    1.56        3.02 
-#> 6 treatment HR                          0.566       0.869
+#> 2 treatment log HR                     -0.571      -0.145
+#> 3 baseline log hazard rate, internal   -0.802      -0.447
+#> 4 baseline log hazard rate, external    1.58        3.02 
+#> 5 commensurability parameter            0.000120    0.619
+#> 6 treatment HR                          0.565       0.865
 ```
 
 We can graph other plots that help us evaluate convergence and diagnose problems with the MCMC sampler, such as trace plot.
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 
 bayesplot::mcmc_trace(
@@ -433,7 +432,7 @@ We conduct analysis using a Weibull distribution for the outcome model using the
 Non-informative normal prior is used for the baseline parameter $\mu$. An exponential prior is used for the Weibull shape parameter $\zeta$.
 
 
-```r
+``` r
 #Outcome
 outcome <- outcome_surv_weibull_ph(
   time_var = "time",
@@ -468,7 +467,7 @@ outcome
 Next, the borrowing method is implemented as shown below. We consider Bayesian Dynamic Borrowing (BDB) in which a non-informative gamma prior is assigned for the commensurability parameter.
 
 
-```r
+``` r
 #Borrowing
 borrowing <- borrowing_hierarchical_commensurate(
   ext_flag_col = "ext",
@@ -493,7 +492,7 @@ borrowing
 Similarly, details regarding the treatment variable are specified below. Non-informative prior is used for treatment effect $\gamma$.
 
 
-```r
+``` r
 #Treatment
 treatment <- treatment_details(
   trt_flag_col = "group",
@@ -515,7 +514,7 @@ treatment
 Now, all the pieces are brought together to create the analysis object as shown below.
 
 
-```r
+``` r
 #Application
 data_with_weights <- as.matrix(data_with_weights)
 anls_obj <- create_analysis_obj(
@@ -532,7 +531,7 @@ anls_obj <- create_analysis_obj(
 Finally, we run the MCMC sample for $10,000$ iterations with $3$ chains.
 
 
-```r
+``` r
 results.weib.psborrow<- mcmc_sample(anls_obj,
   iter_warmup = round(niter/3),
   iter_sampling = niter,
@@ -541,13 +540,13 @@ results.weib.psborrow<- mcmc_sample(anls_obj,
 )
 #> Running MCMC with 3 sequential chains...
 #> 
-#> Chain 1 finished in 29.3 seconds.
-#> Chain 2 finished in 29.0 seconds.
-#> Chain 3 finished in 31.5 seconds.
+#> Chain 1 finished in 11.0 seconds.
+#> Chain 2 finished in 12.8 seconds.
+#> Chain 3 finished in 12.2 seconds.
 #> 
 #> All 3 chains finished successfully.
-#> Mean chain execution time: 30.0 seconds.
-#> Total execution time: 90.2 seconds.
+#> Mean chain execution time: 12.0 seconds.
+#> Total execution time: 36.1 seconds.
 
 draws2 <- results.weib.psborrow$draws()
 draws2 <- rename_draws_covariates(draws2, anls_obj)
@@ -555,25 +554,25 @@ draws2 <- rename_draws_covariates(draws2, anls_obj)
 
 The summary is shown below.
 
-```r
+``` r
 results.weib.psborrow$summary()
 #> # A tibble: 7 × 10
 #>   variable          mean   median     sd    mad       q5      q95  rhat ess_bulk
 #>   <chr>            <dbl>    <dbl>  <dbl>  <dbl>    <dbl>    <dbl> <dbl>    <dbl>
-#> 1 lp__          -708.    -7.07e+2 1.68   1.49   -7.11e+2 -706.     1.00   11530.
-#> 2 beta_trt        -0.302 -3.03e-1 0.110  0.109  -4.82e-1   -0.120  1.00   16857.
-#> 3 shape_weibull    0.836  8.35e-1 0.0322 0.0322  7.83e-1    0.890  1.00   21009.
-#> 4 tau              0.180  7.77e-2 0.288  0.106   6.77e-4    0.693  1.00   14413.
-#> 5 alpha[1]        -0.509 -5.08e-1 0.0931 0.0934 -6.62e-1   -0.358  1.00   16847.
-#> 6 alpha[2]         1.97   2.00e+0 0.386  0.380   1.29e+0    2.57   1.00   20959.
-#> 7 HR_trt           0.744  7.39e-1 0.0823 0.0804  6.17e-1    0.887  1.00   16857.
+#> 1 lp__          -708.    -7.07e+2 1.66   1.47   -7.11e+2 -705.     1.00   11655.
+#> 2 beta_trt        -0.300 -3.01e-1 0.110  0.110  -4.79e-1   -0.117  1.00   15789.
+#> 3 alpha[1]        -0.511 -5.09e-1 0.0936 0.0946 -6.67e-1   -0.361  1.00   15831.
+#> 4 alpha[2]         1.97   1.99e+0 0.382  0.378   1.31e+0    2.55   1.00   21480.
+#> 5 tau              0.182  7.54e-2 0.320  0.104   6.30e-4    0.710  1.00   14273.
+#> 6 shape_weibull    0.836  8.36e-1 0.0319 0.0319  7.84e-1    0.889  1.00   21440.
+#> 7 HR_trt           0.745  7.40e-1 0.0827 0.0817  6.20e-1    0.890  1.00   15789.
 #> # ℹ 1 more variable: ess_tail <dbl>
 ```
 
 Histogram of the posterior samples for hazard ratio and commensurability parameter are produced.
 
 
-```r
+``` r
 bayesplot::mcmc_hist(draws2, c("treatment HR"))
 ```
 
@@ -582,7 +581,7 @@ bayesplot::mcmc_hist(draws2, c("treatment HR"))
 <p class="caption">plot of chunk unnamed-chunk-19</p>
 </div>
 
-```r
+``` r
 bayesplot::mcmc_hist(draws2, c("commensurability parameter"))
 ```
 
@@ -591,29 +590,29 @@ bayesplot::mcmc_hist(draws2, c("commensurability parameter"))
 <p class="caption">plot of chunk unnamed-chunk-19</p>
 </div>
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 ```
 
 The $95\%$ credible interval can be calculated as follows.
 
-```r
+``` r
 summarize_draws(draws2, ~ quantile(.x, probs = c(0.025, 0.975)))
 #> # A tibble: 7 × 3
 #>   variable                                `2.5%`   `97.5%`
 #>   <chr>                                    <dbl>     <dbl>
 #> 1 lp__                               -712.       -705.    
-#> 2 treatment log HR                     -0.515      -0.0855
-#> 3 Weibull shape parameter               0.774       0.900 
-#> 4 commensurability parameter            0.000170    0.945 
-#> 5 baseline log hazard rate, internal   -0.692      -0.331 
-#> 6 baseline log hazard rate, external    1.15        2.66  
-#> 7 treatment HR                          0.598       0.918
+#> 2 treatment log HR                     -0.513      -0.0816
+#> 3 baseline log hazard rate, internal   -0.699      -0.334 
+#> 4 baseline log hazard rate, external    1.16        2.64  
+#> 5 commensurability parameter            0.000165    0.957 
+#> 6 Weibull shape parameter               0.775       0.900 
+#> 7 treatment HR                          0.599       0.922
 ```
 
 We can see other plots that help us evaluate convergence and diagnose problems with the MCMC sampler, such as trace plot.
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 
 bayesplot::mcmc_trace(
@@ -633,7 +632,7 @@ bayesplot::mcmc_trace(
 We will consider the Bayesian power prior with subject specific power parameters. The weights from various matching and weighting methods can be used as subject specific power parameters for external control subjects. The baseline hazard function will be based on piecewise exponential distribution. The following JAGS code, adapted from [@alvares2021bayesian], implements the power prior with piecewise exponential baseline hazard. We will consider a subject specific power parameter as the weights from inverse probability weighting method. The subject specific weights for external control patients are normalized by dividing each weight by the maximum weight.
 
 
-```r
+``` r
 model{
 		#POWER PRIOR JAGS CODE
   #Trial Data
@@ -698,7 +697,7 @@ model{
 We now define all the variables as in input to JAGS.
 
 
-```r
+``` r
 data_with_weights=data.frame(data_with_weights)
 
 #Trial Data
@@ -731,7 +730,7 @@ zerosR = rep(0, nR)
 We also need to pre-specify the number of intervals. For simplicity, we will consider $K=1$ interval. However, this method also works $K>1$.
 
 
-```r
+``` r
 # Time axis partition
 K <- 1 # number of intervals
 
@@ -769,7 +768,7 @@ int.obsR <- rowSums(int.obsR)
 
 We now put all variables into a list as data inputs for JAGs.
 
-```r
+``` r
 ### JAGS ####
 d.jags <- list("n", "nR", "time", "timeR",
                "a", "X", "XR","int.obs",
@@ -781,14 +780,15 @@ d.jags <- list("n", "nR", "time", "timeR",
 We specify the parameter of interest as follows.
 
 
-```r
+``` r
 #Parameter of interest
 p.jags <- c("beta","alpha")
+
 ```
 
 The standard normal distribution is used as an initial values for the parameter of interest.
 
-```r
+``` r
 #Initial values for each parameter
 i.jags <- function(){
   list(beta = rnorm(ncol(X)), alpha = rnorm(K))
@@ -799,67 +799,45 @@ i.jags <- function(){
 Now, we call the `jags` function to conduct MCMC sampling with $3$ chains as shown below. We set number of iterations as $niter=10,000$ with a burn in of $5000$ and thinning of $10$.
 
 
-```r
+``` r
 set.seed(1)
 model1 <- jags(data = d.jags, model.file = "powerprior.txt", inits = i.jags, n.chains = 3,
                parameters=p.jags,n.iter=niter,n.burnin = round(niter/2),n.thin = 10)
-#> Compiling model graph
-#>    Resolving undeclared variables
-#>    Allocating nodes
-#> Graph information:
-#>    Observed stochastic nodes: 1100
-#>    Unobserved stochastic nodes: 2
-#>    Total graph size: 17432
-#> 
-#> Initializing model
+#> Error in `jags()`:
+#> ! could not find function "jags"
 ```
 
 The summary can be produced using the following command.
 
-```r
+``` r
 model1$BUGSoutput$summary
-#>                   mean         sd          2.5%           25%           50%
-#> alpha    -5.566809e-01 0.08954522 -7.394070e-01 -6.170039e-01 -5.543440e-01
-#> beta     -4.200419e-01 0.10776354 -6.340181e-01 -4.921314e-01 -4.202084e-01
-#> deviance  2.200015e+08 1.99156129  2.200015e+08  2.200015e+08  2.200015e+08
-#>                    75%         97.5%     Rhat n.eff
-#> alpha    -4.952955e-01 -3.884554e-01 1.000476  1500
-#> beta     -3.479730e-01 -2.076608e-01 1.000497  1500
-#> deviance  2.200015e+08  2.200015e+08 1.000000     1
+#> Error:
+#> ! object 'model1' not found
 ```
 
 The summary of the hazard ratio for treatment variable is shown below.
 
-```r
+``` r
 c(summary(exp(model1$BUGSoutput$sims.list$beta[,1])),
   quantile(exp(model1$BUGSoutput$sims.list$beta[,1]),probs=c(0.025,0.975)))
-#>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.      2.5%     97.5% 
-#> 0.4931593 0.6113220 0.6569099 0.6608469 0.7061179 0.9601307 0.5304561 0.8124826
+#> Error:
+#> ! object 'model1' not found
 ```
 The histogram of the treatment hazard ratio can also be produced.
 
-```r
+``` r
 hist(exp(model1$BUGSoutput$sims.list$beta[,1]),xlab="treatmentHR",main="",ylab="")
+#> Error:
+#> ! object 'model1' not found
 ```
-
-<div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-31-1.png" alt="plot of chunk unnamed-chunk-31"  />
-<p class="caption">plot of chunk unnamed-chunk-31</p>
-</div>
 
 The traceplot can be generated as follows.
 
-```r
+``` r
 traceplot(model1,varname=c("alpha","beta"))
+#> Error in `traceplot()`:
+#> ! could not find function "traceplot"
 ```
-
-<div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-32-1.png" alt="plot of chunk unnamed-chunk-32"  />
-<p class="caption">plot of chunk unnamed-chunk-32</p>
-</div><div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-32-2.png" alt="plot of chunk unnamed-chunk-32"  />
-<p class="caption">plot of chunk unnamed-chunk-32</p>
-</div>
 
 
 
@@ -869,7 +847,7 @@ traceplot(model1,varname=c("alpha","beta"))
 We will consider the Bayesian commensurate prior model.
 
 
-```r
+``` r
 model{
   #Trial Data
   for (i in 1:n){
@@ -937,7 +915,7 @@ model{
 
 We now define all the variables as in input to JAGS.
 
-```r
+``` r
 data_with_weights=data.frame(data_with_weights)
 
 #Trial Data
@@ -970,7 +948,7 @@ zerosR = rep(0, nR)
 We also need to pre-specify the number of intervals. For simplicity, we will consider $K=1$ interval. However, this method also works when $K>1$.
 
 
-```r
+``` r
 # Time axis partition
 K <- 1 # number of intervals
 
@@ -1008,7 +986,7 @@ int.obsR <- rowSums(int.obsR)
 We now put all variables into a list as data inputs for JAGs. Note that the letter $R$ in the following corresponds to RWD. For example, $XR$ is the covariate matrix in RWD.
 
 
-```r
+``` r
 ### JAGS ####
 d.jags <- list("n", "nR", "time", "timeR",
                "a", "X", "XR","int.obs",
@@ -1020,14 +998,15 @@ d.jags <- list("n", "nR", "time", "timeR",
 We specify the parameter of interest as follows. Note that `alphaR` is the baseline hazard parameter for external control.
 
 
-```r
+``` r
 #Parameter of interest
 p.jags <- c("beta","alpha","alphaR","tau")
+
 ```
 
 We generate initial values for $\beta$ and $\alpha$ from standard normal distributions, and $\tau$ from a non-informative Gamma distribution.
 
-```r
+``` r
 #Initial values for each parameter
 i.jags <- function(){
   list(beta = rnorm(ncol(X)), beta0 = rnorm(ncol(X)),
@@ -1039,97 +1018,62 @@ i.jags <- function(){
 Now, we call the `jags` function to conduct MCMC sampling with $3$ chains as shown below. We set number of iterations as $niter=10,000$ with a burn in of $5000$ and thinning of $10$.
 
 
-```r
+``` r
 set.seed(1)
 model2 <- jags(data = d.jags, model.file = "commensurateprior.txt", inits = i.jags, n.chains = 3,
                parameters=p.jags,n.iter=niter,n.burnin = round(niter/2),n.thin = 10)
-#> Compiling model graph
-#>    Resolving undeclared variables
-#>    Allocating nodes
-#> Graph information:
-#>    Observed stochastic nodes: 1100
-#>    Unobserved stochastic nodes: 5
-#>    Total graph size: 18642
-#> 
-#> Initializing model
+#> Error in `jags()`:
+#> ! could not find function "jags"
 ```
 
 The summary can be produced using the following command.
 
-```r
+``` r
 model2$BUGSoutput$summary
-#>                   mean         sd          2.5%           25%           50%
-#> alpha    -6.191206e-01 0.08842641 -7.909870e-01 -6.787401e-01 -6.193462e-01
-#> alphaR    2.366979e+00 0.36366809  1.593958e+00  2.144550e+00  2.379864e+00
-#> beta     -3.596931e-01 0.10541071 -5.626927e-01 -4.319852e-01 -3.571647e-01
-#> deviance  2.200014e+08 2.44607662  2.200014e+08  2.200014e+08  2.200014e+08
-#> tau       1.254783e-01 0.18316338  4.693678e-04  1.536327e-02  5.811439e-02
-#>                    75%         97.5%     Rhat n.eff
-#> alpha    -5.575406e-01 -4.477827e-01 1.001772  1100
-#> alphaR    2.627147e+00  3.007402e+00 1.004616   440
-#> beta     -2.884953e-01 -1.600480e-01 1.000624  1500
-#> deviance  2.200014e+08  2.200014e+08 1.000000     1
-#> tau       1.585465e-01  6.215560e-01 1.001367  1500
+#> Error:
+#> ! object 'model2' not found
 ```
 
 The summary of the hazard ratio for treatment variable is shown below.
 
-```r
+``` r
 c(summary(exp(model2$BUGSoutput$sims.list$beta[,1])),
   quantile(exp(model2$BUGSoutput$sims.list$beta[,1]),probs=c(0.025,0.975)))
-#>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max.      2.5%     97.5% 
-#> 0.4932769 0.6492190 0.6996573 0.7017649 0.7493903 0.9788045 0.5696732 0.8521031
+#> Error:
+#> ! object 'model2' not found
 ```
 The histogram of the treatment hazard ratio can also be produced.
 
-```r
+``` r
 hist(exp(model2$BUGSoutput$sims.list$beta[,1]),xlab="treatmentHR",main="",ylab="")
+#> Error:
+#> ! object 'model2' not found
 ```
-
-<div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-42-1.png" alt="plot of chunk unnamed-chunk-42"  />
-<p class="caption">plot of chunk unnamed-chunk-42</p>
-</div>
 
 The histogram of the commensurability parameter can also be produced.
 
-```r
+``` r
 hist(exp(model2$BUGSoutput$sims.list$tau[,1]),xlab="Commensurability Parameter",main="",ylab="")
+#> Error:
+#> ! object 'model2' not found
 ```
-
-<div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-43-1.png" alt="plot of chunk unnamed-chunk-43"  />
-<p class="caption">plot of chunk unnamed-chunk-43</p>
-</div>
 
 The traceplot can be created as follows.
 
-```r
+``` r
 traceplot(model2,varname=c("alpha","alphaR","beta","tau"))
+#> Error in `traceplot()`:
+#> ! could not find function "traceplot"
 ```
 
-<div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-44-1.png" alt="plot of chunk unnamed-chunk-44"  />
-<p class="caption">plot of chunk unnamed-chunk-44</p>
-</div><div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-44-2.png" alt="plot of chunk unnamed-chunk-44"  />
-<p class="caption">plot of chunk unnamed-chunk-44</p>
-</div><div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-44-3.png" alt="plot of chunk unnamed-chunk-44"  />
-<p class="caption">plot of chunk unnamed-chunk-44</p>
-</div><div class="figure" style="text-align: center">
-<img src="figure-match_weight_02_application-unnamed-chunk-44-4.png" alt="plot of chunk unnamed-chunk-44"  />
-<p class="caption">plot of chunk unnamed-chunk-44</p>
-</div>
-
 # Exponential distribution (constant hazard) and no borrowing: Using `psborrow2` R package
-In addition to specifying an exponential distribution using Bayesian dynamic borrowing, naive no-borrowing and full-borrowing analysis can be conducted using the exponential distribution following similar steps as above. These ype of analysis could be used as a sensitivity or exploratory analysis.
+In addition to specifying an exponential distribution using Bayesian dynamic borrowing, naive no-borrowing and full-borrowing analysis can be conducted using the exponential distribution following similar steps as above. These type of analysis could be used as a sensitivity or exploratory analysis.
 
 The `psborrow2` package will be used to conduct the analysis. Following are the steps.
   
 We use exponential distribution for the outcome model as follows. Non-informative normal prior is used for the baseline parameter.
 
-```r
+``` r
 #Outcome
 outcome <- outcome_surv_exponential(
   time_var = "time",
@@ -1154,7 +1098,7 @@ outcome
 
 Next, the borrowing method is implemented as shown below. We consider no borrowing as shown below.
 
-```r
+``` r
 #Borrowing
 borrowing <- borrowing_none(
   ext_flag_col = "ext"
@@ -1168,7 +1112,7 @@ borrowing
 
 Similarly, details regarding the treatment variable is specified below. Non-informative prior is used a prior for treatment effect.
 
-```r
+``` r
 #Treatment
 treatment <- treatment_details(
   trt_flag_col = "group",
@@ -1190,7 +1134,7 @@ treatment
 Now, all the pieces are brought together to create the analysis object as shown below.
 
 
-```r
+``` r
 data_with_weights <- as.matrix(data_with_weights)
 #Application
 anls_obj <- create_analysis_obj(
@@ -1208,7 +1152,7 @@ anls_obj <- create_analysis_obj(
 Finally, we run the MCMC sample with $3$ chains.
 
 
-```r
+``` r
 results.no.psborrow<- mcmc_sample(anls_obj,
   iter_warmup = round(niter/3),
   iter_sampling = niter,
@@ -1217,13 +1161,13 @@ results.no.psborrow<- mcmc_sample(anls_obj,
 )
 #> Running MCMC with 3 sequential chains...
 #> 
-#> Chain 1 finished in 4.0 seconds.
-#> Chain 2 finished in 4.1 seconds.
-#> Chain 3 finished in 4.2 seconds.
+#> Chain 1 finished in 1.6 seconds.
+#> Chain 2 finished in 1.7 seconds.
+#> Chain 3 finished in 1.9 seconds.
 #> 
 #> All 3 chains finished successfully.
-#> Mean chain execution time: 4.1 seconds.
-#> Total execution time: 12.7 seconds.
+#> Mean chain execution time: 1.7 seconds.
+#> Total execution time: 5.4 seconds.
 
 draws3 <- results.no.psborrow$draws()
 draws3 <- rename_draws_covariates(draws3, anls_obj)
@@ -1231,22 +1175,22 @@ draws3 <- rename_draws_covariates(draws3, anls_obj)
 
 The summary is shown below.
 
-```r
+``` r
 results.no.psborrow$summary()
 #> # A tibble: 4 × 10
 #>   variable     mean   median     sd    mad       q5      q95  rhat ess_bulk
 #>   <chr>       <dbl>    <dbl>  <dbl>  <dbl>    <dbl>    <dbl> <dbl>    <dbl>
-#> 1 lp__     -727.    -727.    0.983  0.706  -729.    -726.     1.00   10417.
-#> 2 beta_trt   -0.355   -0.356 0.109  0.109    -0.534   -0.174  1.00    8852.
-#> 3 alpha      -0.623   -0.622 0.0910 0.0901   -0.776   -0.477  1.00    8695.
-#> 4 HR_trt      0.705    0.700 0.0773 0.0757    0.586    0.840  1.00    8852.
+#> 1 lp__     -727.    -727.    1.03   0.719  -729.    -726.     1.00   10367.
+#> 2 beta_trt   -0.357   -0.358 0.111  0.111    -0.537   -0.172  1.00    8928.
+#> 3 alpha      -0.622   -0.621 0.0926 0.0929   -0.775   -0.473  1.00    8752.
+#> 4 HR_trt      0.704    0.699 0.0788 0.0775    0.585    0.842  1.00    8928.
 #> # ℹ 1 more variable: ess_tail <dbl>
 ```
 
 The histogram of the posterior samples for hazard ratio and commensurability parameter as shown below.
 
 
-```r
+``` r
 bayesplot::mcmc_hist(draws3, c("treatment HR"))
 ```
 
@@ -1255,26 +1199,26 @@ bayesplot::mcmc_hist(draws3, c("treatment HR"))
 <p class="caption">plot of chunk unnamed-chunk-51</p>
 </div>
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 ```
 
 The $95\%$ credible interval can be calculated as follows.
 
-```r
+``` r
 summarize_draws(draws3, ~ quantile(.x, probs = c(0.025, 0.975)))
 #> # A tibble: 4 × 3
 #>   variable                   `2.5%`  `97.5%`
 #>   <chr>                       <dbl>    <dbl>
 #> 1 lp__                     -730.    -726.   
-#> 2 treatment log HR           -0.568   -0.139
-#> 3 baseline log hazard rate   -0.806   -0.451
-#> 4 treatment HR                0.567    0.870
+#> 2 treatment log HR           -0.571   -0.137
+#> 3 baseline log hazard rate   -0.807   -0.445
+#> 4 treatment HR                0.565    0.872
 ```
 
 We can see other plots that help us understand and diagnose problems with the MCMC sampler, such as trace plot.
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 
 bayesplot::mcmc_trace(
@@ -1295,7 +1239,7 @@ The `psborrow2` package will be used to conduct the analysis. Following are the 
   
 We use exponential distribution for the outcome model as follows. Non-informative normal prior is used for the baseline parameter.
 
-```r
+``` r
 #Outcome
 outcome <- outcome_surv_exponential(
   time_var = "time",
@@ -1320,7 +1264,7 @@ outcome
 
 Next, the borrowing method is implemented as shown below. We consider full borrowing as shown below.
 
-```r
+``` r
 #Borrowing
 borrowing <- borrowing_full(ext_flag_col = "ext")
 
@@ -1332,7 +1276,7 @@ borrowing
 
 Similarly, details regarding the treatment variable is specified below. Non-informative prior is used a prior for treatment effect.
 
-```r
+``` r
 #Treatment
 treatment <- treatment_details(
   trt_flag_col = "group",
@@ -1354,7 +1298,7 @@ treatment
 Now, all the pieces are brought together to create the analysis object as shown below.
 
 
-```r
+``` r
 #Application
 anls_obj <- create_analysis_obj(
   data_matrix = data_with_weights,
@@ -1371,7 +1315,7 @@ anls_obj <- create_analysis_obj(
 Finally, we run the MCMC sample with $3$ chains.
 
 
-```r
+``` r
 results.full.psborrow<- mcmc_sample(anls_obj,
   iter_warmup = round(niter/3),
   iter_sampling = niter,
@@ -1380,13 +1324,13 @@ results.full.psborrow<- mcmc_sample(anls_obj,
 )
 #> Running MCMC with 3 sequential chains...
 #> 
-#> Chain 1 finished in 5.8 seconds.
-#> Chain 2 finished in 5.7 seconds.
-#> Chain 3 finished in 5.9 seconds.
+#> Chain 1 finished in 2.8 seconds.
+#> Chain 2 finished in 2.3 seconds.
+#> Chain 3 finished in 2.6 seconds.
 #> 
 #> All 3 chains finished successfully.
-#> Mean chain execution time: 5.8 seconds.
-#> Total execution time: 17.9 seconds.
+#> Mean chain execution time: 2.6 seconds.
+#> Total execution time: 8.0 seconds.
 
 draws4 <- results.full.psborrow$draws()
 draws4 <- rename_draws_covariates(draws4, anls_obj)
@@ -1394,22 +1338,22 @@ draws4 <- rename_draws_covariates(draws4, anls_obj)
 
 The summary is shown below.
 
-```r
+``` r
 results.full.psborrow$summary()
 #> # A tibble: 4 × 10
 #>   variable     mean   median     sd    mad       q5      q95  rhat ess_bulk
 #>   <chr>       <dbl>    <dbl>  <dbl>  <dbl>    <dbl>    <dbl> <dbl>    <dbl>
-#> 1 lp__     -747.    -747.    1.01   0.710  -749.    -746.     1.00   13060.
-#> 2 beta_trt   -1.51    -1.51  0.0765 0.0762   -1.64    -1.39   1.00   10894.
-#> 3 alpha       0.534    0.535 0.0467 0.0463    0.458    0.610  1.00   10829.
-#> 4 HR_trt      0.221    0.220 0.0169 0.0168    0.194    0.250  1.00   10894.
+#> 1 lp__     -747.    -747.    1.00   0.709  -749.    -746.     1.00   13222.
+#> 2 beta_trt   -1.51    -1.51  0.0763 0.0755   -1.64    -1.39   1.00   11880.
+#> 3 alpha       0.535    0.535 0.0465 0.0465    0.458    0.610  1.00   11478.
+#> 4 HR_trt      0.221    0.220 0.0169 0.0166    0.194    0.249  1.00   11880.
 #> # ℹ 1 more variable: ess_tail <dbl>
 ```
 
 The histogram of the posterior samples for hazard ratio and commensurability parameter as shown below.
 
 
-```r
+``` r
 bayesplot::mcmc_hist(draws4, c("treatment HR"))
 ```
 
@@ -1418,26 +1362,26 @@ bayesplot::mcmc_hist(draws4, c("treatment HR"))
 <p class="caption">plot of chunk unnamed-chunk-60</p>
 </div>
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 ```
 
 The $95\%$ credible interval can be calculated as follows.
 
-```r
+``` r
 summarize_draws(draws4, ~ quantile(.x, probs = c(0.025, 0.975)))
 #> # A tibble: 4 × 3
 #>   variable                   `2.5%`  `97.5%`
 #>   <chr>                       <dbl>    <dbl>
 #> 1 lp__                     -750.    -746.   
 #> 2 treatment log HR           -1.66    -1.36 
-#> 3 baseline log hazard rate    0.442    0.625
+#> 3 baseline log hazard rate    0.442    0.623
 #> 4 treatment HR                0.190    0.256
 ```
 
 We can see other plots that help us understand and diagnose problems with the MCMC sampler, such as trace plot.
 
-```r
+``` r
 bayesplot::color_scheme_set("mix-blue-pink")
 
 bayesplot::mcmc_trace(
@@ -1457,7 +1401,7 @@ bayesplot::mcmc_trace(
 Now, we also demonstrate how researchers would fit a frequentist Cox model. For the first model, we will not borrow any information from external controls and use the trial data only.
 
 
-```r
+``` r
 data_with_weights = data.frame(data_with_weights)
 f1 <- coxph(Surv(time,event)~group, data=data_with_weights[data_with_weights$ext==0,])
 summary(f1)
@@ -1485,7 +1429,7 @@ summary(f1)
 A frequentist Cox model can also be fitted using all of the external control data via full borrowing.
 
 
-```r
+``` r
 f2 <- coxph(Surv(time,event)~group, data=data_with_weights)
 summary(f2)
 #> Call:
@@ -1511,14 +1455,18 @@ summary(f2)
 # Summarizing all the results together
 Now, we concatenate the results from all of the Bayesian and frequentist analysis approaches together. 
 
-```r
+``` r
 hr1=results.exp.psborrow$summary()[6,c(2)]
 hr1conf = summarize_draws(draws1, ~ quantile(.x, probs = c(0.025, 0.975)))[6,c(2,3)]
 hr1.conf=c(hr1$mean,hr1conf$`2.5%`,hr1conf$`97.5%`)
 
 hr2=c(mean(exp(model1$BUGSoutput$sims.list$beta[,1])),
   quantile(exp(model1$BUGSoutput$sims.list$beta[,1]),probs=c(0.025,0.975)))
+#> Error:
+#> ! object 'model1' not found
 hr2.conf=c(hr2)
+#> Error:
+#> ! object 'hr2' not found
 
 hr3=results.weib.psborrow$summary()[7,c(2)]
 hr3conf = summarize_draws(draws2, ~ quantile(.x, probs = c(0.025, 0.975)))[7,c(2,3)]
@@ -1526,7 +1474,11 @@ hr3.conf=c(hr3$mean,hr3conf$`2.5%`,hr3conf$`97.5%`)
 
 hr4=c(mean(exp(model2$BUGSoutput$sims.list$beta[,1])),
   quantile(exp(model2$BUGSoutput$sims.list$beta[,1]),probs=c(0.025,0.975)))
+#> Error:
+#> ! object 'model2' not found
 hr4.conf=c(hr4)
+#> Error:
+#> ! object 'hr4' not found
 
 hr5=results.no.psborrow$summary()[4,c(2)]
 hr5conf = summarize_draws(draws3, ~ quantile(.x, probs = c(0.025, 0.975)))[4,c(2,3)]
@@ -1541,8 +1493,12 @@ hr7.conf=c(exp(coef(f1)),exp(confint(f1)))
 hr8.conf=c(exp(coef(f2)),exp(confint(f2)))
 
 out = round(rbind(hr1.conf,hr2.conf,hr3.conf,hr4.conf,hr5.conf,hr6.conf,hr7.conf,hr8.conf),4)
+#> Error:
+#> ! object 'hr2.conf' not found
 
 rownames(out)= NULL
+#> Error:
+#> ! object 'out' not found
 out = data.frame(Method=c("Exponential distribution (constant hazard) and gamma prior",
                           "Piecewise exponential distribution (proportional hazard) and power prior",
                           "Weibull distribution (proportional hazard) and gamma prior",
@@ -1551,27 +1507,21 @@ out = data.frame(Method=c("Exponential distribution (constant hazard) and gamma 
                           "Exponential distribution (constant hazard): Full borrowing",
                           "Cox model (Frequentist approach): No borrowing",
                           "Cox model (Frequentist approach): Full borrowing"),out)
+#> Error:
+#> ! object 'out' not found
 colnames(out)[2:4] = c("Hazard Ratio","Lower 95% CI","Upper 95% CI")
+#> Error:
+#> ! object 'out' not found
 ```
 
 The hazard ratio estimates and $95\%$ credible intervals for all the methods are shown below.
 
-
-|Method                                                                          | Hazard Ratio| Lower 95% CI| Upper 95% CI|
-|:-------------------------------------------------------------------------------|------------:|------------:|------------:|
-|Exponential distribution (constant hazard) and gamma prior                      |       0.7040|       0.5660|       0.8688|
-|Piecewise exponential distribution (proportional hazard) and power prior        |       0.6608|       0.5305|       0.8125|
-|Weibull distribution (proportional hazard) and gamma prior                      |       0.7437|       0.5978|       0.9180|
-|Piecewise exponential distribution (proportional hazard) and commensurate prior |       0.7018|       0.5697|       0.8521|
-|Exponential distribution (constant hazard): No borrowing                        |       0.7054|       0.5666|       0.8699|
-|Exponential distribution (constant hazard): Full borrowing                      |       0.2209|       0.1896|       0.2560|
-|Cox model (Frequentist approach): No borrowing                                  |       0.7757|       0.6246|       0.9633|
-|Cox model (Frequentist approach): Full borrowing                                |       0.3327|       0.2845|       0.3890|
-
-__Note:__
-CI: Credible Interval for Bayesian methods and Confidence interval for Frequentist method
-
-
+```
+#> Error:
+#> ! object 'out' not found
+#> Error in `add_footnote()`:
+#> ! could not find function "add_footnote"
+```
 
 # References
 
